@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "dev.teapod.exp.grpc.echo";
+
+service Echo {
+  rpc sendEcho(EchoRequest) returns (EchoResponse) {}
+}
+
+message EchoRequest {
+  int32 requestId = 1;
+  string message = 2;
+}
+
+message EchoResponse {
+  int32 requestId = 1;
+  string message = 2;
+}
