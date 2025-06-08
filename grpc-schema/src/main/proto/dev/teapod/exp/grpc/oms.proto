@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option java_package = "dev.teapod.exp.grpc.oms";
+
+service Oms {
+  rpc sendOrder(NewOrderRequest) returns (NewOrderResponse) {}
+}
+
+message NewOrderRequest {
+  int64 requestId = 1;
+  string uuid = 2;
+  string clOrderId = 3;
+  int32 clientId = 4;
+  string clientName = 5;
+  string originatingSystem = 6;
+  string sourceSystem = 7;
+  google.protobuf.Timestamp createdTimestampUtc = 8;
+
+  OrderType orderType = 9;
+  Side side = 10;
+  repeated NoAlloc noAllocs = 11;
+  string securityName = 12;
+  string currency = 13;
+  string settlCurrency = 14;
+  DecimalValue quantity = 15;
+  DecimalValue price = 16;
+  google.protobuf.Timestamp tradeDateTimestampUtc = 17;
+  google.protobuf.Timestamp settleDateTimestampUtc = 18;
+  google.protobuf.Timestamp expireTimestampUtc = 19;
+
+  repeated string notes = 20;
+  string execInst = 21;
+  string handleInst = 22;
+
+  string traderName = 23;
+  string description = 24;
+  string designation = 25;
+}
+
+message NewOrderResponse {
+  int64 requestId = 1;
+  string uuid = 2;
+  string clOrderId = 3;
+  string orderId = 4;
+  OrderStatus orderStatus = 5;
+  google.protobuf.Timestamp receivedTimestampUtc = 6;
+  google.protobuf.Timestamp processedTimestampUtc = 7;
+  DecimalValue grossAmt = 8;
+  DecimalValue netAmt = 9;
+  DecimalValue feesAmt = 10;
+}
+
+message NoAlloc {
+  uint32 allocAccount = 1;
+  DecimalValue allocPrice = 2;
+  DecimalValue allocQty = 3;
+  string allocSettlCurrency = 4;
+  string individualAllocId = 5;
+}
+
+message DecimalValue {
+  uint32 scale = 1;
+  uint32 precision = 2;
+  bytes value = 3;
+}
+
+enum Side {
+  Buy = 0;
+  Sell = 1;
+  Borrow = 2;
+  Lend = 3;
+  Redeem = 4;
+  Cross = 5;
+  CrossShort = 6;
+  Short = 7;
+  SellShort = 8;
+  Undisclosed = 9;
+  BuyMinus = 10;
+  SellPlus = 11;
+}
+
+enum OrderStatus {
+  New = 0;
+  PartiallyFilled = 1;
+  Filed = 2;
+  DoneForDay = 3;
+  Cancelled = 4;
+  Replaced = 5;
+  PendingCancel = 6;
+  Stopped = 7;
+  Suspended = 8;
+  PendingNew = 9;
+  Calculated = 10;
+  Accepted = 11;
+  PendingReplace = 12;
+}
+
+enum OrderType {
+  Marker = 0;
+  Limit = 1;
+  Stop = 2;
+  StopLimit = 3;
+  OnBasis = 4;
+}

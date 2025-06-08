@@ -1,7 +1,5 @@
-package dev.teapod.exp.grpc;
+package dev.teapod.exp.grpc.echo;
 
-import dev.teapod.exp.grpc.echo.EchoGrpc;
-import dev.teapod.exp.grpc.echo.EchoOuterClass;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,4 +1,4 @@
-package dev.teapod.exp.grpc;
+package dev.teapod.exp.grpc.oms;
 
 import io.grpc.Grpc;
 import io.grpc.InsecureServerCredentials;
@@ -10,27 +10,27 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class EchoServer {
+public class OmsServer {
     private final int port;
     private final Server grpcServer;
 
-    public EchoServer(int port) {
+    public OmsServer(int port) {
         this.port = port;
         ServerBuilder<?> serverBuilder = Grpc.newServerBuilderForPort(this.port, InsecureServerCredentials.create());
 
         this.grpcServer = serverBuilder
-                .addService(new EchoService())
+                .addService(new OmsService())
                 .build();
     }
 
     public void start() throws IOException {
-        log.info("Starting the server at port: {}", port);
+        log.info("Starting the oms server at port: {}", port);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            log.info("Shutting down the server.");
+            log.info("Shutting down the oms server.");
 
             try {
-                EchoServer.this.stop();
+                OmsServer.this.stop();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -40,11 +40,11 @@ public class EchoServer {
 
         grpcServer.start();
 
-        log.info("Server has been started.");
+        log.info("Oms server has been started.");
     }
 
     public void stop() throws InterruptedException {
-        log.info("Stopping the server.");
+        log.info("Stopping the oms server.");
         if (grpcServer != null) {
             grpcServer.shutdown().awaitTermination(60, TimeUnit.SECONDS);
         }
@@ -57,8 +57,8 @@ public class EchoServer {
     }
 
     public static void main(String[] args) throws Exception {
-        EchoServer echoServer = new EchoServer(8976);
-        echoServer.start();
-        echoServer.blockUntilShutdown();
+        OmsServer omsServer = new OmsServer(8977);
+        omsServer.start();
+        omsServer.blockUntilShutdown();
     }
 }
