@@ -6,6 +6,7 @@ option java_package = "dev.teapod.exp.grpc.oms";
 
 service Oms {
   rpc sendOrder(NewOrderRequest) returns (NewOrderResponse) {}
+  rpc sendOrdersAsync(stream NewOrderRequest) returns (stream NewOrderResponse) {}
 }
 
 message NewOrderRequest {
