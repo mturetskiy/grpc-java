@@ -63,8 +63,14 @@ public class OmsAsyncClient extends OmsClient {
                 stats.getResponseTransportDurations().add(responseTransportDuration.toNanos());
                 stats.getEndToEndDurations().add(endToEndDuration.toNanos());
 
-                log.debug("[{}] Received response for order, requestId: {}, endToEndTime: {} micros. grossAmt: {}, netAmt: {}, feesAmt: {}",
-                        clientName, newOrderResponse.getRequestId(), MICROSECONDS.convert(endToEndDuration), grossAmt, netAmt, feesAmt);
+                // todo: time is not in sync between machines. update message to return time spent on server, and then substract it on the client.
+
+
+                log.debug("[{}] Received response for order, requestId: {}, " +
+                                "reqTime: {} micros, respTime: {} micros, endToEndTime: {} micros. " +
+                                "grossAmt: {}, netAmt: {}, feesAmt: {}",
+                        clientName, newOrderResponse.getRequestId(), MICROSECONDS.convert(requestTransportDuration),
+                        MICROSECONDS.convert(responseTransportDuration),  MICROSECONDS.convert(endToEndDuration), grossAmt, netAmt, feesAmt);
             }
 
             @Override
@@ -85,7 +91,9 @@ public class OmsAsyncClient extends OmsClient {
                 OmsOuterClass.NewOrderRequest newOrderRequest = createOrderRequest(clientName, clientId, i, noAllocsCount);
                 requestSentTimes.put(newOrderRequest.getRequestId(), Instant.now());
                 requestStreamObserver.onNext(newOrderRequest);
-                log.debug("[{}] Sent order requestOd: {}", clientName, newOrderRequest.getRequestId());
+
+                int bytes = newOrderRequest.getSerializedSize();
+                log.debug("[{}] Sent order requestOd: {}, size: {} bytes", clientName, newOrderRequest.getRequestId(), bytes);
             }
 
             requestStreamObserver.onCompleted();
@@ -125,8 +133,8 @@ public class OmsAsyncClient extends OmsClient {
     }
 
     public static void main(String[] args) {
-        String host = "127.0.0.1";
-//        String host = "mtair.local";
+//        String host = "127.0.0.1";
+        String host = "mtair.local";
         int port = 8977;
         int clientsCount = 10;
         int messagesCount = 100_000;
